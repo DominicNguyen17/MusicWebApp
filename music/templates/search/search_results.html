@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <main id="search">
+        <h1 class="title">Results matching '{{ query }}'</h1>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Track Name</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if results|length == 0 %}
+                    <tr>
+                        <td colspan="4">No results found.</td>
+                    </tr>
+                {% elif results|length > 0 %}
+                    {% for track in results %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('view_bp.view_track', track_id=track.track_id) }}">{{ track.title }}</a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('search_bp.search_results', search_by="artist", query=track.artist.full_name) }}">{{ track.artist.full_name }}</a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('search_bp.search_results', search_by="album", query=track.album.title) }}">{{ track.album.title }}</a>
+                            </td>
+                            <td>{{ "{}:{:02d}".format(track.track_duration // 60, track.track_duration  % 60) }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </main>
+{% endblock content %}
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+      $('.result-table').DataTable({
+        "searching": false,
+        "pageLength": 50,
+        "lengthChange": false
+      });
+    });
+    </script>
+{% endblock %}
